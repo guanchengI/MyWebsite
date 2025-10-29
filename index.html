@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户设置 - 个人中心</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* 头部样式 */
+        .header {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #2c3e50;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        /* 主要内容区域 */
+        .main-content {
+            display: flex;
+            gap: 30px;
+        }
+
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            padding: 20px;
+            height: fit-content;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .sidebar-menu {
+            list-style: none;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 12px 15px;
+            color: #4a5568;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .sidebar-menu a:hover {
+            background: rgba(66, 153, 225, 0.08);
+            color: #4299e1;
+        }
+
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
+        }
+
+        /* 内容区域样式 */
+        .content-area {
+            flex: 1;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.03);
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        /* 表单样式 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
+        }
+
+        .form-group input[type="text"],
+        .form-group input[type="email"],
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .form-group input[type="text"]:focus,
+        .form-group input[type="email"]:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* 头像上传样式 */
+        .avatar-upload {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 80px;
+            height: 80px;
+        }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%
+                /* 关键：裁剪并填满，不变形 */
+        }
+
+        .avatar-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 3px solid white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .avatar-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            color: #a0aec0;
+            font-size: 12px;
+        }
+
+        .upload-btn {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
+        }
+
+        .upload-btn:hover {
+            background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+            box-shadow: 0 6px 8px rgba(66, 153, 225, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* 单选按钮样式 */
+        .radio-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .radio-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #4299e1;
+        }
+
+        .radio-item label {
+            cursor: pointer;
+            margin-bottom: 0;
+        }
+
+        /* 开关样式 */
+        .switch-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .switch-container:hover {
+            background: #edf2f7;
+            transform: translateY(-1px);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #cbd5e0;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        input:checked+.slider {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
+
+        /* 按钮样式 */
+        .btn-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+            box-shadow: 0 6px 8px rgba(66, 153, 225, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            color: #4a5568;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-secondary:hover {
+            background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+        }
+
+        /* 账号绑定样式 */
+        .bind-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+
+        .bind-item:hover {
+            background: #edf2f7;
+            transform: translateY(-1px);
+        }
+
+        .bind-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .bind-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #4a5568;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .bind-details h4 {
+            font-size: 14px;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .bind-details p {
+            font-size: 12px;
+            color: #718096;
+        }
+
+        .bind-btn {
+            padding: 6px 12px;
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(66, 153, 225, 0.2);
+        }
+
+        .bind-btn:hover {
+            background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
+            box-shadow: 0 4px 6px rgba(66, 153, 225, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .bind-btn.unbind {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e0 100%);
+            color: #4a5568;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .bind-btn.unbind:hover {
+            background: linear-gradient(135deg, #cbd5e0 0%, #a0aec0 100%);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+            }
+
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="header">
+        <div class="container">
+            <h1>个人设置</h1>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <!-- 侧边栏 -->
+            <aside class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="#basic" class="active">基本设置</a></li>
+                    <li><a href="#security">安全设置</a></li>
+                    <li><a href="#notifications">新消息通知</a></li>
+                    <li><a href="#privacy">隐私设置</a></li>
+                    <li><a href="#account">账号绑定</a></li>
+                </ul>
+            </aside>
+
+            <!-- 内容区域 -->
+            <main class="content-area">
+                <!-- 基本设置 -->
+                <section id="basic" class="section">
+                    <h2 class="section-title">基本设置</h2>
+
+                    <div class="form-group">
+                        <label>头像</label>
+                        <div class="avatar-upload">
+                            <img src="" alt="" class="avatar-img">
+                            <label for=""><button type="button" class="upload-btn"
+                                    onclick="document.querySelector('.upload').click()">更换头像</button></label>
+                            <input type="file" class="upload" style="display: none;">
+                        </div>
+                    </div>
+                    <form action="" class="user-form">
+                        <div class="form-group">
+                            <label for="nickname">昵称</label>
+                            <input type="text" class="nickname" placeholder="请输入昵称" name="nickname">
+                        </div>
+
+                        <div class="form-group">
+                            <label>性别</label>
+                            <div class="radio-group" name="gender">
+                                <div class="radio-item">
+                                    <input type="radio" id="male" name="gender" value="0" checked>
+                                    <label for="male">男</label>
+                                </div>
+                                <div class="radio-item">
+                                    <input type="radio" id="female" name="gender" value="1">
+                                    <label for="female">女</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="bio">个人简介</label>
+                            <textarea id="bio" placeholder="介绍一下自己吧" class="desc" name="desc"></textarea>
+                        </div>
+                        <!-- 基本设置提交按钮 -->
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary submit">提交基本信息</button>
+                        </div>
+                </section>
+
+                <!-- 安全设置 -->
+                <section id="security" class="section">
+                    <h2 class="section-title">安全设置</h2>
+
+                    <div class="form-group">
+                        <label for="email">邮箱</label>
+                        <input type="email" class="email" name="email">
+                    </div>
+
+
+                </section>
+                </form>
+
+                <!-- 新消息通知 -->
+                <section id="notifications" class="section">
+                    <h2 class="section-title">新消息通知</h2>
+
+                    <div class="switch-container">
+                        <div>
+                            <strong>系统通知</strong>
+                            <p style="font-size: 12px; color: #999; margin-top: 5px;">接收系统重要通知</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox" checked>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="switch-container">
+                        <div>
+                            <strong>邮件通知</strong>
+                            <p style="font-size: 12px; color: #999; margin-top: 5px;">接收邮件通知</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="switch-container">
+                        <div>
+                            <strong>短信通知</strong>
+                            <p style="font-size: 12px; color: #999; margin-top: 5px;">接收短信通知</p>
+                        </div>
+                        <label class="switch">
+                            <input type="checkbox">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </section>
+
+                <!-- 账号绑定 -->
+                <section id="account" class="section">
+                    <h2 class="section-title">账号绑定</h2>
+
+                    <div class="bind-item">
+                        <div class="bind-info">
+                            <div class="bind-icon">微信</div>
+                            <div class="bind-details">
+                                <h4>微信</h4>
+                                <p>未绑定</p>
+                            </div>
+                        </div>
+                        <button class="bind-btn">绑定</button>
+                    </div>
+
+                    <div class="bind-item">
+                        <div class="bind-info">
+                            <div class="bind-icon">QQ</div>
+                            <div class="bind-details">
+                                <h4>QQ</h4>
+                                <p>已绑定:123456789</p>
+                            </div>
+                        </div>
+                        <button class="bind-btn unbind">解绑</button>
+                    </div>
+
+                    <div class="bind-item">
+                        <div class="bind-info">
+                            <div class="bind-icon">微博</div>
+                            <div class="bind-details">
+                                <h4>微博</h4>
+                                <p>未绑定</p>
+                            </div>
+                        </div>
+                        <button class="bind-btn">绑定</button>
+                    </div>
+                </section>
+
+                <!-- 提交按钮 -->
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">保存设置</button>
+                    <button type="button" class="btn btn-secondary">重置</button>
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/form-serialize@0.7.2/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="./index.js"></script>
+
+</body>
+
+</html>
